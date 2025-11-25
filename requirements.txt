@@ -25,3 +25,4 @@ yarl==1.22.0
 celery
 redis
 django_celery_beat
+psycopg2-binary
