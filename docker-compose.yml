@@ -16,5 +16,28 @@ services:
     volumes:
       - redis-data:/data
 
+  celery_worker:
+    build: .
+    container_name: tg-celery-worker
+    env_file:
+      - .env
+    command: celery -A bot.celery_app worker --loglevel=info
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  celery_beat:
+    build: .
+    container_name: tg-celery-beat
+    env_file:
+      - .env
+    command: celery -A bot.celery_app beat --loglevel=info --scheduler=django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - ./celerybeat:/app/celerybeat
+    working_dir: /app
+    depends_on:
+      - redis
+    restart: unless-stopped
+
 volumes:
   redis-data:
